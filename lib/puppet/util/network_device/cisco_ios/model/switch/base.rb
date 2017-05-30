@@ -1,13 +1,16 @@
 require 'puppet/util/network_device/cisco_ios/model'
 require 'puppet/util/network_device/cisco_ios/model/aaa_group'
 require 'puppet/util/network_device/cisco_ios/model/acl'
-require 'puppet/util/network_device/cisco_ios/model/snmp'
-require 'puppet/util/network_device/cisco_ios/model/snmp_community'
-require 'puppet/util/network_device/cisco_ios/model/snmp_host'
+require 'puppet/util/network_device/cisco_ios/model/hsrp_standby_group'
 require 'puppet/util/network_device/cisco_ios/model/interface'
 require 'puppet/util/network_device/cisco_ios/model/line'
 require 'puppet/util/network_device/cisco_ios/model/model_value'
+require 'puppet/util/network_device/cisco_ios/model/snmp'
+require 'puppet/util/network_device/cisco_ios/model/snmp_community'
+require 'puppet/util/network_device/cisco_ios/model/snmp_host'
 require 'puppet/util/network_device/cisco_ios/model/switch'
+require 'puppet/util/network_device/cisco_ios/model/vlan'
+require 'puppet/util/network_device/cisco_ios/model/vrf'
 
 module Puppet::Util::NetworkDevice::Cisco_ios::Model::Switch::Base
 
@@ -165,6 +168,18 @@ module Puppet::Util::NetworkDevice::Cisco_ios::Model::Switch::Base
 
     base.register_model(:interfaces, Puppet::Util::NetworkDevice::Cisco_ios::Model::Interface, /^interface\s+(\S+)\r*$/, 'sh run')
 
+    base.register_param(:hsrp_standby_groups, Puppet::Util::NetworkDevice::Cisco_ios::Model::ModelValue) do
+      model Puppet::Util::NetworkDevice::Cisco_ios::Model::HsrpStandbyGroup
+      cmd 'sh run'
+      match do |txt|
+        txt.scan(/^interface\s+(\S+)(.*?)^!/m).collect do |parent_interface,body|
+          body.scan(/^\s*standby\s+(\d+)\s*/m).collect do |standby_group|
+            new_model(:name => "#{parent_interface}/#{standby_group}", :parent_interface => parent_interface, :standby_group => standby_group) 
+          end
+        end.flatten
+      end
+    end
+
     base.register_model(:aaa_group, Puppet::Util::NetworkDevice::Cisco_ios::Model::Aaa_group, /^aaa group server (?:radius|tacacs\+)\s+(\S+)$/, 'sh run')
 
     base.register_model(:acl, Puppet::Util::NetworkDevice::Cisco_ios::Model::Acl, /^ip access-list (?:standard|extended)\s+(\S+)$/, 'sh run')
@@ -201,6 +216,8 @@ module Puppet::Util::NetworkDevice::Cisco_ios::Model::Switch::Base
     base.register_model(:snmp_host, Puppet::Util::NetworkDevice::Cisco_ios::Model::Snmp_host, /^snmp-server\shost\s+(\S+)/, 'sh run')
 
     base.register_model(:vlan, Puppet::Util::NetworkDevice::Cisco_ios::Model::Vlan, /^(\d+)\s\S+/, 'sh vlan brief')
+
+    base.register_model(:vrf, Puppet::Util::NetworkDevice::Cisco_ios::Model::Vrf, /^ip vrf (\w+)/, 'sh run')
 
     if base.facts && base.facts['canonicalized_hardwaremodel'] == 'c4500'
       base.register_new_module('c4500', 'hardware')

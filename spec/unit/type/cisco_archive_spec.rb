@@ -3,6 +3,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:cisco_archive) do
   let(:name) { 'running' }
+  let(:described_class) { Puppet::Type.type(:cisco_archive) }
 
   it "should have a 'name' parameter'" do
     described_class.new(:name => 'running')[:name].should == :running

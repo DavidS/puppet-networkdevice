@@ -3,6 +3,8 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:cisco_user) do
   let(:name) { 'admin' }
+  let(:described_class) { Puppet::Type.type(:cisco_user) }
+
   it "should have a 'name' parameter'" do
     described_class.new(:name => 'admin')[:name].should == name
   end

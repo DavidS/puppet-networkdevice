@@ -4,6 +4,7 @@ require 'spec_helper'
 describe Puppet::Type.type(:cisco_config) do
 
   let(:name) { :running }
+  let(:described_class) { Puppet::Type.type(:cisco_config) }
 
   it "should have a 'name' parameter'" do
     described_class.new(:name => "running")[:name].should == name

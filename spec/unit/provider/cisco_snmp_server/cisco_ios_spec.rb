@@ -52,6 +52,7 @@ describe Puppet::Type.type(:cisco_snmp_server).provider(:cisco_ios) do
       @instance.resource = @resource
       @resource.stubs(:[]).with(:name).returns(:running)
       @instance.stubs(:device).returns(@device)
+      @snmp_host = 'foo'
       @switch.expects(:snmp).with(:running).returns(@snmp_host)
       @snmp_host.expects(:update).with({:name => :running, :contact => 'foo@bar'},
                                        {:name => :running, :contact => 'bar@foo'})

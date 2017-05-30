@@ -3,6 +3,8 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:cisco_vlan) do
   let(:name) { '1100' }
+  let(:described_class) { Puppet::Type.type(:cisco_vlan) }
+
   it "should have a 'name' parameter'" do
     described_class.new(:name => '1100')[:name].should == name
   end

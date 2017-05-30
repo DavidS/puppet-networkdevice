@@ -3,6 +3,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:cisco_exec) do
   let(:name) { 'cmd' }
+  let(:described_class) { Puppet::Type.type(:cisco_exec) }
 
   it "should have a 'name' parameter'" do
     described_class.new(:name => 'cmd')[:name].should == 'cmd'

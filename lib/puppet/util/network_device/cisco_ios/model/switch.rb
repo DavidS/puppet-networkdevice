@@ -1,17 +1,18 @@
-require 'puppet/util/network_device/ipcalc'
 require 'puppet/util/network_device/cisco_ios/model'
 require 'puppet/util/network_device/cisco_ios/model/aaa_group'
 require 'puppet/util/network_device/cisco_ios/model/acl'
 require 'puppet/util/network_device/cisco_ios/model/archive'
-require 'puppet/util/network_device/cisco_ios/model/vlan'
-require 'puppet/util/network_device/cisco_ios/model/user'
-require 'puppet/util/network_device/cisco_ios/model/radius_server'
-require 'puppet/util/network_device/cisco_ios/model/snmp_community'
-require 'puppet/util/network_device/cisco_ios/model/snmp_host'
-require 'puppet/util/network_device/cisco_ios/model/snmp'
-require 'puppet/util/network_device/cisco_ios/model/interface'
 require 'puppet/util/network_device/cisco_ios/model/base'
 require 'puppet/util/network_device/cisco_ios/model/generic_value'
+require 'puppet/util/network_device/cisco_ios/model/hsrp_standby_group'
+require 'puppet/util/network_device/cisco_ios/model/interface'
+require 'puppet/util/network_device/cisco_ios/model/radius_server'
+require 'puppet/util/network_device/cisco_ios/model/snmp'
+require 'puppet/util/network_device/cisco_ios/model/snmp_community'
+require 'puppet/util/network_device/cisco_ios/model/snmp_host'
+require 'puppet/util/network_device/cisco_ios/model/user'
+require 'puppet/util/network_device/cisco_ios/model/vlan'
+require 'puppet/util/network_device/ipcalc'
 
 class Puppet::Util::NetworkDevice::Cisco_ios::Model::Switch < Puppet::Util::NetworkDevice::Cisco_ios::Model::Base
 
@@ -48,14 +49,21 @@ class Puppet::Util::NetworkDevice::Cisco_ios::Model::Switch < Puppet::Util::Netw
 
   def interface(name)
     int = params[:interfaces].value.find { |int| int.name == name }
-    int.evaluate_new_params
-    return int
+    int.evaluate_new_params if int
+    int
+  end
+
+  def hsrp_standby_group(name)
+    grp = params[:hsrp_standby_groups].value.find { |g| g.name == name } || Puppet::Util::NetworkDevice::Cisco_ios::Model::HsrpStandbyGroup.new(transport, facts, {:name => name})
+    grp.evaluate_new_params
+    grp
   end
 
   [ :aaa_group,
     :acl,
     :user,
     :vlan,
+    :vrf,
     :radius_server,
     :snmp_community,
     :snmp_host,

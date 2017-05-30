@@ -136,6 +136,25 @@ module Puppet::Util::NetworkDevice::Cisco_ios::Model::Interface::Base
       end
     end
 
+    ifprop(base, :ip_vrf_forwarding, "ip vrf forwarding") do
+      add do |transport, value|
+        transport.command("ip vrf forwarding #{value}", { :prompt => /(% Interface .* IP address .* removed due to (en|dis)abling VRF .*\n)?[^%]*\(config-if\)#/ })
+      end
+      remove do |transport, old_value|
+        transport.command("no ip vrf forwarding #{old_value}", { :prompt => /(% Interface .* IP address .* removed due to (en|dis)abling VRF .*\n)?[^%]*\(config-if\)#/ })
+      end
+    end
+
+    ifprop(base, :ip_address, "ip address") do
+      after :ip_vrf_forwarding
+    end
+
+    ifprop(base, :standby_delay_reload, "standby delay reload")
+
+    if base.facts && base.facts['canonicalized_hardwaremodel'] == 'c6509'
+      base.register_new_module('c6509', 'hardware')
+    end
+
     if base.facts && base.facts['canonicalized_hardwaremodel'] == 'c4500'
       base.register_new_module('c4500', 'hardware')
     end

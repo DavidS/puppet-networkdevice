@@ -1,5 +1,5 @@
 dir = File.expand_path(File.dirname(__FILE__))
-$LOAD_PATH.unshift File.join(dir), 'lib'
+# $LOAD_PATH.unshift File.join(dir), 'lib'
 
 ARGV.clear
 

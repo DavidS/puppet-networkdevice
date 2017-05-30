@@ -2,6 +2,7 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:cisco_snmp_server_host) do
+  let(:described_class) { Puppet::Type.type(:cisco_snmp_server_host) }
 
   it "should have a 'name' parameter'" do
     described_class.new(:name => '127.0.0.1')[:name].should == '127.0.0.1'
